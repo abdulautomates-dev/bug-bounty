@@ -41,3 +41,8 @@ Next steps:
      auth token, to see if it still returns data (auth bypass check).
   3. Ask HackenProof whether synthetic/test funds are available, since real-money
      testing isn't comfortable to do just to generate order history.
+
+## Auth bypass test on order.query - RESULT: NOT VULNERABLE
+- order.query without any auth -> {"error":{"code":6,"message":"require authentication"}}
+- server.auth with garbage token -> same error; order.query after that also rejected
+- Conclusion: ws.pointpay.io properly enforces auth before returning order data. No finding here.
