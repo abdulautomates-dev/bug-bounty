@@ -46,3 +46,18 @@ Next steps:
 - order.query without any auth -> {"error":{"code":6,"message":"require authentication"}}
 - server.auth with garbage token -> same error; order.query after that also rejected
 - Conclusion: ws.pointpay.io properly enforces auth before returning order data. No finding here.
+
+## server.auth token - CONFIRMED session-specific (not static)
+- Session A: $2y$10$GjEh08gYKzt51.4qNXLfDuDW8WTztbrfPYBv1t5BPfneqZuMRRTES
+- Session B (fresh logout/login): $2y$10$O4JRdCzjeq4HoMp5pxxLn0nswl5CzBjtNYW6V5gJ12xiqojr6oCDG
+- Different each login -> this is a real session credential, not a public app ID
+- Unusual: bcrypt-hash-SHAPED value sent client->server as a bearer credential
+  (normally bcrypt hashes are server-side-only artifacts)
+- NOT a confirmed finding yet. Need to establish:
+  1. Where frontend JS obtains this value (cookie? localStorage? API response?)
+  2. Whether it's exposed anywhere unintended (non-HttpOnly cookie, URL, 3rd-party
+     script/analytics beacon, logged server-side)
+  3. Whether possessing it alone (replay) is sufficient to authenticate as the user
+- Next: read authenticated app JS (exchange.pointpay.io bundle) for where this
+  token is read from / stored, OR check Application/Storage tab equivalent for
+  where it lives client-side.
